@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فحص الروابط - حسنى الرب | كشف الروابط الخطيرة والملغومة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #0d1b2a 50%, #1b263b 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* الهيدر */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .avatar-circle {
+            width: 85px;
+            height: 85px;
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 8px 25px rgba(255,215,0,0.4);
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+
+        .avatar-circle span {
+            font-size: 52px;
+        }
+
+        .hash-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            padding: 8px 28px;
+            border-radius: 60px;
+            color: #1a1a2e;
+            font-weight: bold;
+            font-size: 22px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(255,215,0,0.3);
+        }
+
+        h1 {
+            font-size: 32px;
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .sub {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        /* البطاقة الرئيسية */
+        .card {
+            background: rgba(18, 18, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            padding: 35px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,215,0,0.2);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        /* شرح الموقع */
+        .info-box {
+            background: rgba(255,215,0,0.1);
+            border-right: 4px solid #ffd700;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+        }
+
+        .info-box h3 {
+            color: #ffd700;
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+
+        .info-box p {
+            color: #ccc;
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            color: #aaa;
+            padding-right: 20px;
+            margin-top: 10px;
+        }
+
+        .info-box li {
+            margin: 8px 0;
+        }
+
+        /* حقل الإدخال */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #ddd;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 16px;
+            background: #1e1e2a;
+            border: 2px solid #2a2a3a;
+            border-radius: 20px;
+            color: white;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .url-input:focus {
+            border-color: #ffd700;
+        }
+
+        .check-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            color: #1a1a2e;
+            border: none;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .check-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* نتيجة الفحص */
+        .result-box {
+            background: #1e1e2a;
+            border-radius: 24px;
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+            border: 1px solid rgba(255,215,0,0.2);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #2a2a3a;
+        }
+
+        .status-icon {
+            font-size: 40px;
+        }
+
+        .status-title {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .status-title.danger { color: #ff6b6b; }
+        .status-title.warning { color: #ffd93d; }
+        .status-title.success { color: #6bcb77; }
+        .status-title.info { color: #ffd700; }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #2a2a3a;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .detail-label {
+            color: #aaa;
+            font-weight: bold;
+        }
+
+        .detail-value {
+            color: white;
+            word-break: break-all;
+            text-align: left;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .risk-critical { background: #ff6b6b; color: white; }
+        .risk-high { background: #ff9f4a; color: #1a1a2e; }
+        .risk-medium { background: #ffd93d; color: #1a1a2e; }
+        .risk-low { background: #6bcb77; color: #1a1a2e; }
+        .risk-safe { background: #ffd700; color: #1a1a2e; }
+
+        .loader {
+            display: none;
+            width: 50px;
+            height: 50px;
+            margin: 20px auto;
+            border: 4px solid #2a2a3a;
+            border-top: 4px solid #ffd700;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-msg {
+            background: rgba(255,107,107,0.2);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+        }
+
+        .hash-footer {
+            text-align: center;
+            margin-top: 15px;
+            color: #888;
+        }
+
+        .copyright {
+            color: #ffd700;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="avatar-circle">
+            <span>🛡️</span>
+        </div>
+        <div class="hash-tag">🔍 #حسني_الرب</div>
+        <h1>📡 فاحص الروابط</h1>
+        <div class="sub">كشف الروابط الملغومة • الخطيرة • غير الآمنة • التصيد</div>
+    </div>
+
+    <div class="card">
+        <!-- شرح الموقع وماذا يفعل -->
+        <div class="info-box">
+            <h3>⚠️ ماذا يفعل هذا الموقع؟</h3>
+            <p><strong>هذا فاحص متخصص للروابط، يقوم بـ:</strong></p>
+            <ul>
+                <li>🔍 <strong>فحص الرابط وتحليله</strong> - يكشف إذا كان الرابط ملغوماً أو خطيراً</li>
+                <li>🛡️ <strong>كشف الروابط الضارة</strong> - روابط التصيد، الفيروسات، البرمجيات الخبيثة</li>
+                <li>📊 <strong>تحليل أمان الرابط</strong> - يعطيك تقييماً كاملاً عن مدى خطورة الرابط</li>
+                <li>📍 <strong>معلومات عن الموقع</strong> - يكشف ماهية الموقع وماذا يفعل</li>
+                <li>⚠️ <strong>تحذيرات أمنية</strong> - ينبهك إذا كان الرابط غير آمن أو موثوق</li>
+            </ul>
+            <p style="margin-top: 12px; color: #ffd700;">💡 فقط الصق الرابط في الأسفل واضغط "فحص الرابط" وستظهر لك النتائج الكاملة!</p>
+        </div>
+
+        <!-- حقل إدخال الرابط -->
+        <div class="input-group">
+            <label>🔗 رابط للفحص (انستغرام، تيك توك، أي رابط)</label>
+            <input type="text" id="urlInput" class="url-input" placeholder="الصق الرابط هنا للفحص...">
+        </div>
+
+        <button class="check-btn" id="checkBtn">🛡️ فحص الرابط وتحليله</button>
+
+        <div class="loader" id="loader"></div>
+        <div class="error-msg" id="errorMsg"></div>
+
+        <!-- مكان عرض النتائج -->
+        <div class="result-box" id="resultBox">
+            <div class="result-header">
+                <div class="status-icon" id="statusIcon">🔍</div>
+                <div class="status-title" id="statusTitle">جاري التحليل...</div>
+            </div>
+            <div id="detailsContainer"></div>
+        </div>
+    </div>
+
+    <div class="hash-footer">
+        <span>#حسني_الرب</span> 🛡️ | فحص الروابط وحماية من الاختراق
+    </div>
+    <div class="footer">
+        <span class="copyright">© جميع الحقوق محفوظة | حسنى الرب</span>
+    </div>
+</div>
+
+<script>
+    const urlInput = document.getElementById('urlInput');
+    const checkBtn = document.getElementById('checkBtn');
+    const loader = document.getElementById('loader');
+    const errorMsg = document.getElementById('errorMsg');
+    const resultBox = document.getElementById('resultBox');
+    const statusIcon = document.getElementById('statusIcon');
+    const statusTitle = document.getElementById('statusTitle');
+    const detailsContainer = document.getElementById('detailsContainer');
+
+    function showError(text) {
+        errorMsg.innerText = text;
+        errorMsg.style.display = 'block';
+        resultBox.style.display = 'none';
+        loader.style.display = 'none';
+    }
+
+    function hideError() {
+        errorMsg.style.display = 'none';
+    }
+
+    // دالة تحليل الرابط بالكامل
+    function analyzeLink(url) {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const analysis = {
+                    url: url,
+                    domain: '',
+                    protocol: '',
+                    isHttps: false,
+                    isShortened: false,
+                    hasSpecialChars: false,
+                    hasIP: false,
+                    hasMultipleDots: false,
+                    suspiciousKeywords: [],
+                    riskLevel: 'low',
+                    riskScore: 0,
+                    websiteType: 'غير معروف',
+                    description: '',
+                    recommendations: []
+                };
+
+                try {
+                    const urlObj = new URL(url);
+                    analysis.domain = urlObj.hostname;
+                    analysis.protocol = urlObj.protocol;
+                    analysis.isHttps = (urlObj.protocol === 'https:');
+                    
+                    // كشف النطاقات المختصرة
+                    const shorteners = ['bit.ly', 'tinyurl', 'shorturl', 'goo.gl', 'ow.ly', 'is.gd', 'buff.ly', 'adf.ly', 'shorte.st', 'bc.vc', 't.co'];
+                    if (shorteners.some(s => analysis.domain.includes(s))) {
+                        analysis.isShortened = true;
+                        analysis.suspiciousKeywords.push('رابط مختصر قد يخفي وجهة خطيرة');
+                        analysis.riskScore += 25;
+                    }
+
+                    // كشف وجود أرقام IP
+                    if (/\d+\.\d+\.\d+\.\d+/.test(analysis.domain)) {
+                        analysis.hasIP = true;
+                        analysis.suspiciousKeywords.push('⚠️ الرابط يحتوي على عنوان IP بدلاً من دومين - قد يكون احتيالياً');
+                        analysis.riskScore += 35;
+                    }
+
+                    // كشف نقاط كثيرة
+                    if ((analysis.domain.match(/\./g) || []).length > 3) {
+                        analysis.hasMultipleDots = true;
+                        analysis.suspiciousKeywords.push('دومين معقد وغير طبيعي - قد يكون رابط تصيد');
+                        analysis.riskScore += 20;
+                    }
+
+                    // كشف كلمات مريبة
+                    const dangerousWords = ['login', 'verify', 'secure', 'update', 'confirm', 'bank', 'paypal', 'password', 'credential', 'signin', 'auth', '2fa', 'unlock', 'suspended', 'warning', 'alert', 'security'];
+                    const lowerUrl = url.toLowerCase();
+                    dangerousWords.forEach(word => {
+                        if (lowerUrl.includes(word)) {
+                            analysis.suspiciousKeywords.push(`يحتوي على كلمة "${word}" قد تستخدم في روابط التصيد`);
+                            analysis.riskScore += 15;
+                        }
+                    });
+
+                    // كشف رموز غريبة
+                    if (/[^a-zA-Z0-9\/\:\.\?\&\=\-\_\~\#\%]/.test(url)) {
+                        analysis.hasSpecialChars = true;
+                        analysis.suspiciousKeywords.push('يحتوي على رموز غير مألوفة قد تخفي تلاعباً');
+                        analysis.riskScore += 10;
+                    }
+
+                    // كشف روابط التحميل المشبوهة
+                    if (lowerUrl.includes('download') || lowerUrl.includes('.exe') || lowerUrl.includes('.apk') || lowerUrl.includes('.zip') || lowerUrl.includes('.rar')) {
+                        analysis.suspiciousKeywords.push('⚠️ رابط تحميل ملف - تأكد من المصدر قبل التحميل');
+                        analysis.riskScore += 20;
+                    }
+
+                    // تحديد نوع الموقع
+                    if (lowerUrl.includes('tiktok.com')) {
+                        analysis.websiteType = '🎵 تيك توك (منصة فيديوهات)';
+                        analysis.description = 'منصة مشاركة فيديوهات آمنة نسبياً، لكن احذر من الروابط المختصرة';
+                        analysis.riskScore -= 30;
+                    } else if (lowerUrl.includes('instagram.com')) {
+                        analysis.websiteType = '📸 انستغرام (تواصل اجتماعي)';
+                        analysis.description = 'منصة آمنة، انتبه من حسابات التصيد';
+                        analysis.riskScore -= 25;
+                    } else if (lowerUrl.includes('facebook.com') || lowerUrl.includes('fb.com')) {
+                        analysis.websiteType = '📘 فيسبوك';
+                        analysis.description = 'منصة اجتماعية، احذر من الروابط التي تطلب معلوماتك';
+                        analysis.riskScore -= 20;
+                    } else if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) {
+                        analysis.websiteType = '▶️ يوتيوب';
+                        analysis.description = 'منصة فيديوهات آمنة';
+                        analysis.riskScore -= 30;
+                    } else if (lowerUrl.includes('google.com')) {
+                        analysis.websiteType = '🔍 جوجل';
+                        analysis.description = 'محرك بحث آمن';
+                        analysis.riskScore -= 40;
+                    } else {
+                        analysis.websiteType = '🌐 موقع خارجي (غير معروف)';
+                        analysis.description = 'رابط لم يتم التعرف عليه تلقائياً. يجب الحذر عند فتحه';
+                        analysis.riskScore += 15;
+                    }
+
+                    // HTTPS
+                    if (!analysis.isHttps) {
+                        analysis.suspiciousKeywords.push('الرابط غير مشفر (HTTP بدلاً من HTTPS) - المعلومات غير آمنة');
+                        analysis.riskScore += 25;
+                    } else {
+                        analysis.suspiciousKeywords.push('✅ الرابط مشفر بـ HTTPS (اتصال آمن جزئياً)');
+                    }
+
+                    // تحديد مستوى الخطورة
+                    if (analysis.riskScore >= 60) {
+                        analysis.riskLevel = 'critical';
+                    } else if (analysis.riskScore >= 35) {
+                        analysis.riskLevel = 'high';
+                    } else if (analysis.riskScore >= 15) {
+                        analysis.riskLevel = 'medium';
+                    } else if (analysis.riskScore >= 0) {
+                        analysis.riskLevel = 'low';
+                    } else {
+                        analysis.riskLevel = 'safe';
+                    }
+
+                    // توصيات
+                    if (analysis.riskLevel === 'critical') {
+                        analysis.recommendations.push('🚫 لا تفتح هذا الرابط أبداً! قد يكون رابط احتيال خطير');
+                        analysis.recommendations.push('⚠️ قد يؤدي إلى سرقة بياناتك أو تثبيت فيروس');
+                    } else if (analysis.riskLevel === 'high') {
+                        analysis.recommendations.push('⚠️ خطر مرتفع - تجنب فتح الرابط إلا إذا كنت متأكداً من المصدر');
+                    } else if (analysis.riskLevel === 'medium') {
+                        analysis.recommendations.push('⚠️ خطر متوسط - يفضل توخي الحذر');
+                    } else if (analysis.riskLevel === 'low') {
+                        analysis.recommendations.push('✅ خطر منخفض - يمكن فتحه مع الانتباه');
+                    } else {
+                        analysis.recommendations.push('✅ آمن - يبدو الرابط آمناً للاستخدام');
+                    }
+
+                } catch (e) {
+                    analysis.domain = 'رابط غير صالح';
+                    analysis.websiteType = 'تنسيق رابط خاطئ';
+                    analysis.description = 'لم يتم التعرف على الرابط، تأكد من صيغته';
+                    analysis.riskLevel = 'medium';
+                    analysis.suspiciousKeywords.push('الرابط لا يتبع التنسيق المعتاد');
+                }
+
+                resolve(analysis);
+            }, 1000);
+        });
+    }
+
+    function displayResults(analysis) {
+        let riskClass = '';
+        let riskText = '';
+        let statusText = '';
+        let statusIconEmoji = '';
+
+        switch(analysis.riskLevel) {
+            case 'critical':
+                riskClass = 'risk-critical';
+                riskText = '⚠️ خطر قاتل - رابط ملغوم!!!';
+                statusText = '🔴 خطر خطير جداً - لا تفتحه!';
+                statusIconEmoji = '💀';
+                break;
+            case 'high':
+                riskClass = 'risk-high';
+                riskText = '⚠️ خطر مرتفع - رابط مشبوه جداً';
+                statusText = '🟠 خطر مرتفع - تجنب الفتح';
+                statusIconEmoji = '⚠️';
+                break;
+            case 'medium':
+                riskClass = 'risk-medium';
+                riskText = '⚡ خطر متوسط - يحتاج حذر';
+                statusText = '🟡 خطر متوسط - انتبه';
+                statusIconEmoji = '⚡';
+                break;
+            case 'low':
+                riskClass = 'risk-low';
+                riskText = '✅ خطر منخفض - آمن نوعاً ما';
+                statusText = '🟢 خطر منخفض';
+                statusIconEmoji = '✅';
+                break;
+            default:
+                riskClass = 'risk-safe';
+                riskText = '🛡️ آمن - لا توجد مخاطر كبيرة';
+                statusText = '🔵 رابط آمن';
+                statusIconEmoji = '🛡️';
+        }
+
+        statusIcon.innerHTML = statusIconEmoji;
+        statusTitle.innerHTML = statusText;
+        statusTitle.className = `status-title ${analysis.riskLevel === 'critical' ? 'danger' : (analysis.riskLevel === 'high' ? 'warning' : (analysis.riskLevel === 'low' ? 'success' : 'info'))}`;
+
+        let html = `
+            <div class="detail-row">
+                <span class="detail-label">🔗 الرابط المُفحَص:</span>
+                <span class="detail-value">${analysis.url.substring(0, 70)}${analysis.url.length > 70 ? '...' : ''}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">🌐 المجال/الموقع:</span>
+                <span class="detail-value">${analysis.domain}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">📱 ماهو هذا الموقع؟:</span>
+                <span class="detail-value">${analysis.websiteType}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">📝 وصف الموقع:</span>
+                <span class="detail-value">${analysis.description}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">🔒 HTTPS (تشفير):</span>
+                <span class="detail-value">${analysis.isHttps ? '✅ نعم (آمن جزئياً)' : '❌ لا (غير آمن - بياناتك مكشوفة)'}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">📊 مستوى الخطورة:</span>
+                <span class="detail-value"><span class="risk-badge ${riskClass}">${riskText}</span></span>
+            </div>
+        `;
+
+        if (analysis.suspiciousKeywords.length > 0) {
+            html += `<div class="detail-row"><span class="detail-label">⚠️ التحذيرات الأمنية:</span><span class="detail-value"><ul style="margin:0; padding-right:20px;">`;
+            analysis.suspiciousKeywords.forEach(k => {
+                html += `<li style="color:#ffd93d;">${k}</li>`;
+            });
+            html += `</ul></span></div>`;
+        }
+
+        if (analysis.recommendations.length > 0) {
+            html += `<div class="detail-row"><span class="detail-label">💡 التوصيات:</span><span class="detail-value"><ul style="margin:0; padding-right:20px;">`;
+            analysis.recommendations.forEach(r => {
+                html += `<li style="color:#6bcb77;">${r}</li>`;
+            });
+            html += `</ul></span></div>`;
+        }
+
+        detailsContainer.innerHTML = html;
+        resultBox.style.display = 'block';
+    }
+
+    checkBtn.addEventListener('click', async () => {
+        const url = urlInput.value.trim();
+        if (!url) {
+            showError('الرجاء إدخال رابط للفحص');
+            return;
+        }
+
+        if (!url.startsWith('http')) {
+            showError('الرابط يجب أن يبدأ بـ http:// أو https://');
+            return;
+        }
+
+        hideError();
+        loader.style.display = 'block';
+        resultBox.style.display = 'none';
+        checkBtn.disabled = true;
+        checkBtn.style.opacity = '0.6';
+
+        const analysis = await analyzeLink(url);
+
+        loader.style.display = 'none';
+        checkBtn.disabled = false;
+        checkBtn.style.opacity = '1';
+        
+        displayResults(analysis);
+    });
+
+    urlInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            checkBtn.click();
+        }
+    });
+</script>
+</body>
+</html>
